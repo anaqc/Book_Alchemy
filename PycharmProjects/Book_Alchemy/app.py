@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, request,jsonify
+from flask import Flask, render_template, session, request, jsonify, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from data_models import db, Author, Book
 import os
@@ -77,9 +77,21 @@ def add_book():
         )
         db.session.add(new_book)
         db.session.commit()
-        return jsonify({"Message":"Book added successfully!"}), 201
+        #flash("Book added successfully", "success")
+        return render_template('add_book.html')
     else:
         return render_template('add_book.html')
+
+
+@app.route('/book/<int:book_id>/delete', methods=['POST'])
+def delete_book(book_id):
+    # Get book or return 4004 if book_if not found
+    book = Book.query.get_or_404(book_id)
+    db.session.delete(book)
+    db.session.commit()
+    #flash("Book deleted successfully!", "success")
+    return render_template('home.html')
+
 
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=5000, debug=True)

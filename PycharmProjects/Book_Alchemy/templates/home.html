@@ -13,7 +13,11 @@
                 <option value="books_title" {% if selected_first_filter == "books_title" %}selected{% endif %}>Book title</option>
                 <option value="books_author" {% if selected_first_filter == "books_author" %}selected{% endif %}>Book author</option>
             </select>
-            {% if selected_first_filter != 'all' %}
+            {% if selected_first_filter == 'all' %}
+            <label for="search">Search title book: </label>
+            <input id="search" name="search">
+            <button type="submit">Search</button>
+            {% else %}
             <label for="second_filter"> Select a option: </label>
             <select name="second_filter" id="second_filter">
                 {% for filter in  books_query %}
@@ -23,10 +27,6 @@
                 {% endfor %}
             </select>
             <button type="submit">Submit</button>
-            {% else %}
-            <label for="search">Search title book: </label>
-            <input id="search" name="search">
-            <button type="submit">Search</button>
             {% endif %}
         </form>
         <main>
@@ -37,6 +37,7 @@
                         <th>Book Title</th>
                         <th>Author</th>
                         <th>Publication Year</th>
+                        <th>Delete</th>
                     </tr>
                     {% for book, author in books_authors %}
                     <tr>
@@ -44,9 +45,17 @@
                         <td>{{book.title}}</td>
                         <td>{{author.name}}</td>
                         <td>{{book.publication_year}}</td>
+                        <td>
+                            <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST"
+                                  onsubmit="return confirm('Are you sure you want to delete this book? {{book.title}}');">
+                                <input type="hidden" name="_method" value="delete">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
                          </tr>
                     {% endfor %}
                 </table>
+
             {% else %}
             <div> <h3>There were no books that match the search criteria!!!</h3></div>
             {% endif %}
