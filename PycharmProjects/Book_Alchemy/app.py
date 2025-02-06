@@ -27,17 +27,25 @@ db.init_app(app)
 def home():
     selected_first_filter = request.form.get('first_filter', 'all')
     selected_second_filter = request.form.get('second_filter', '')
-    # Perform an explicit JOIN between Book and Author
-    books_authors = db.session.query(Book, Author).join(Author).all()
+    search_title_book = request.form.get('search','')
+    # JOIN between Book and Author
+    books_authors = db.session.query(Book, Author).join(Author).filter(Book.title.like(f"%{search_title_book}%")).all()
     if request.method == 'POST':
-        books_option = ""
+        books_query = ""
         if selected_first_filter == 'books_title':
-            books_option = db.session.query(Book.id, Book.title).join(Author).all()
+            books_query = db.session.query(Book.title).join(Author).all()
+            if selected_second_filter != '':
+                # Query if the book title is the same that it was selected
+                books_authors = db.session.query(Book, Author).join(Author) \
+                                .filter(Book.title == selected_second_filter).all()
         elif selected_first_filter == 'books_author':
-            books_option = db.session.query(Author.id, Author.name).all()
+            books_query = db.session.query(Author.name).all()
+            if selected_second_filter != '':
+                books_authors = db.session.query(Book, Author).join(Author) \
+                                .filter(Author.name == selected_second_filter).all()
         return render_template('home.html',
                                    selected_first_filter=selected_first_filter, books_authors=books_authors,
-                                   selected_second_filter=selected_second_filter, books_option=books_option), 201
+                                   selected_second_filter=selected_second_filter, books_query=books_query), 201
     return render_template('home.html', books_authors=books_authors,
                            selected_first_filter=selected_first_filter, selected_second_filter=selected_second_filter), 201
 

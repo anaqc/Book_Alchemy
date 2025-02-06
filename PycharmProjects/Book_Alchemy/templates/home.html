@@ -1,74 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  </head>
-  <body>
-<form action="/" method="POST">
-   <label for="first_filter">Filter books by:</label>
-   <select name="first_filter" id="first_filter" onchange="this.form.submit()">
-     <option value="all" {% if selected_first_filter == "all" %}selected{% endif %}>All</option>
-     <option value="books_title" {% if selected_first_filter == "books_title" %}selected{% endif %}>Book title</option>
-     <option value="books_author" {% if selected_first_filter == "books_author" %}selected{% endif %}>Book author</option>
-   </select>
-    {% if selected_first_filter != 'all' %}
-  <label for="second_filter"> Select a option: </label>
-  <select name="second_filter" id="second_filter">
-    {% for id_filter, filter in  books_option %}
-
-      {% if selected_second_filter != None %}
-        <option value="{{filter}}" {% if selected_second_filter == filter %}selected{% endif %}>{{filter}}</option>
-      {% endif %}
-    {% endfor %}
-  </select>
-    <button type="submit">Submit</button>
-  {% endif %}
-</form>
-<form action="/" method ="POST">
-
-</form>
-    <table>
-      <tr>
-        <th>Id Book</th>
-        <th>Book Title</th>
-        <th>Author</th>
-        <th>Publication Year</th>
-      </tr>
-
-      {% for book, author in books_authors %}
-      <tr>
-        {% if selected_first_filter == 'all' %}
-
-        <td>{{book.id}}</td>
-        <td>{{book.title}}</td>
-        <td>{{author.name}}</td>
-        <td>{{book.publication_year}}</td>
-
-      {% endif %}
-      {% if selected_first_filter == 'books_author' and author.name == selected_second_filter %}
-
-        <td>{{book.id}}</td>
-        <td>{{book.title}}</td>
-        <td>{{author.name}}</td>
-        <td>{{book.publication_year}}</td>
-
-      {% endif%}
-      {% if selected_first_filter == 'books_title' and book.title == selected_second_filter %}
-        <td>{{book.id}}</td>
-        <td>{{book.title}}</td>
-        <td>{{author.name}}</td>
-        <td>{{book.publication_year}}</td>
-      {% endif %}
-         </tr>
-      {% endfor %}
-
-    </table>
-
-    <div> <h3></h3>
-    </div>
-
-
-  </body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    </head>
+    <body>
+        <form action="/" method="POST">
+            <label for="first_filter">Filter books by:</label>
+            <select name="first_filter" id="first_filter" onchange="this.form.submit()">
+                <option value="all" {% if selected_first_filter == "all" %}selected{% endif %}>All</option>
+                <option value="books_title" {% if selected_first_filter == "books_title" %}selected{% endif %}>Book title</option>
+                <option value="books_author" {% if selected_first_filter == "books_author" %}selected{% endif %}>Book author</option>
+            </select>
+            {% if selected_first_filter != 'all' %}
+            <label for="second_filter"> Select a option: </label>
+            <select name="second_filter" id="second_filter">
+                {% for filter in  books_query %}
+                    {% if selected_second_filter != None %}
+                <option value="{{filter[0]}}" {% if selected_second_filter == filter[0] %}selected{% endif %}>{{filter[0]}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit">Submit</button>
+            {% else %}
+            <label for="search">Search title book: </label>
+            <input id="search" name="search">
+            <button type="submit">Search</button>
+            {% endif %}
+        </form>
+        <main>
+            {% if books_authors %}
+                <table>
+                    <tr>
+                        <th>Id Book</th>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Publication Year</th>
+                    </tr>
+                    {% for book, author in books_authors %}
+                    <tr>
+                        <td>{{book.id}}</td>
+                        <td>{{book.title}}</td>
+                        <td>{{author.name}}</td>
+                        <td>{{book.publication_year}}</td>
+                         </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+            <div> <h3>There were no books that match the search criteria!!!</h3></div>
+            {% endif %}
+        </main>
+    </body>
 </html>
