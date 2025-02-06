@@ -22,6 +22,26 @@ db.init_app(app)
 # Create the new tables
 #with app.app_context():
 #    db.create_all()
+
+@app.route('/' ,methods=('GET','POST'))
+def home():
+    selected_first_filter = request.form.get('first_filter', 'all')
+    selected_second_filter = request.form.get('second_filter', '')
+    # Perform an explicit JOIN between Book and Author
+    books_authors = db.session.query(Book, Author).join(Author).all()
+    if request.method == 'POST':
+        books_option = ""
+        if selected_first_filter == 'books_title':
+            books_option = db.session.query(Book.id, Book.title).join(Author).all()
+        elif selected_first_filter == 'books_author':
+            books_option = db.session.query(Author.id, Author.name).all()
+        return render_template('home.html',
+                                   selected_first_filter=selected_first_filter, books_authors=books_authors,
+                                   selected_second_filter=selected_second_filter, books_option=books_option), 201
+    return render_template('home.html', books_authors=books_authors,
+                           selected_first_filter=selected_first_filter, selected_second_filter=selected_second_filter), 201
+
+
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
     if request.method == 'POST':
@@ -54,4 +74,4 @@ def add_book():
         return render_template('add_book.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=True)
