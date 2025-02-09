@@ -28,6 +28,7 @@ def home():
     selected_first_filter = request.form.get('first_filter', 'all')
     selected_second_filter = request.form.get('second_filter', '')
     search_title_book = request.form.get('search','')
+    authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
     # JOIN between Book and Author
     books_authors = db.session.query(Book, Author).join(Author).filter(Book.title.like(f"%{search_title_book}%")).all()
     if request.method == 'POST':
@@ -39,15 +40,17 @@ def home():
                 books_authors = db.session.query(Book, Author).join(Author) \
                                 .filter(Book.title == selected_second_filter).all()
         elif selected_first_filter == 'books_author':
-            books_query = db.session.query(Author.name).all()
+            books_query = db.session.query(Author.name).join(Book).distinct()
             if selected_second_filter != '':
                 books_authors = db.session.query(Book, Author).join(Author) \
                                 .filter(Author.name == selected_second_filter).all()
         return render_template('home.html',
                                    selected_first_filter=selected_first_filter, books_authors=books_authors,
-                                   selected_second_filter=selected_second_filter, books_query=books_query), 201
+                                   selected_second_filter=selected_second_filter, books_query=books_query,
+                               authors_without_books=authors_without_books), 201
     return render_template('home.html', books_authors=books_authors,
-                           selected_first_filter=selected_first_filter, selected_second_filter=selected_second_filter), 201
+                           selected_first_filter=selected_first_filter, selected_second_filter=selected_second_filter,
+                           authors_without_books=authors_without_books), 201
 
 
 @app.route('/add_author', methods=['GET', 'POST'])
@@ -91,6 +94,17 @@ def delete_book(book_id):
     db.session.commit()
     #flash("Book deleted successfully!", "success")
     return render_template('home.html')
+
+
+@app.route('/author/<int:author_id>/delete', methods=['POST'])
+def delete_author(author_id):
+    authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
+    author = Author.query.get_or_404(author_id)
+    for author in authors_without_books:
+        if author_id == author.id:
+            db.session.delete(author)
+            db.session.commit()
+            return render_template('home.html')
 
 
 if __name__ == '__main__':
