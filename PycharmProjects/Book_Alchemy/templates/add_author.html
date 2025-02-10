@@ -13,7 +13,9 @@
             <a href="/add_author">Add author</a>
             <a href="{{ url_for('list_authors') }}"> List authors </a>
         </nav><br><br>
-  <form action="/add_author" method="POST">
+        <div class="form_container">
+            <form class="add_author" action="/add_author" method="POST">
+                <h3>Add Books</h3><br>
   <label for="name">Author Name:</label>
   <input type="text" id="name" name="name" required><br><br>
   <label for="birthdate">Birthdate:</label>
@@ -25,5 +27,7 @@
   <div><h3>{{ message }}</h3></div>
   {% endif %}
   </form>
+        </div>
+
   </body>
 </html>

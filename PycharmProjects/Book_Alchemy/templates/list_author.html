@@ -14,8 +14,34 @@
             <a href="{{ url_for('list_authors') }}"> List authors </a>
         </nav><br><br>
 <main>
-            {% if authors_without_books %}
-            <h3>Authors list doesn't have any other book in your library </h3>
+        <form action="{{ url_for('list_authors') }}" method="POST">
+            <label for="filter">Select a option: </label>
+            <select name="filter" id="filter" onchange="this.form.submit()">
+                <option value="all_authors" {% if selected_filter == "all_authors" %}selected{% endif %}> All authors </option>
+                <option value="authors_to_delete" {% if selected_filter == "authors_to_delete" %}selected{% endif %}> Authors to delete </option>
+            </select>
+        </form>
+        {% if selected_filter == "all_authors"%}
+        <h3>List Books</h3>
+        <div class="table_container">
+            <table>
+                <tr>
+                    <th> Id author </th>
+                    <th> Name author </th>
+                    <th> Birth date </th>
+                </tr>
+                {% for author in authors %}
+                <tr>
+                    <td>{{ author.id }}</td>
+                    <td>{{ author.name }}</td>
+                    <td>{{ author.birth_date}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+            {% elif selected_filter == "authors_to_delete" and authors_without_books %}
+            <h3>Authors list doesn't have any other book in library </h3>
+            <div class="table_container">
             <table>
                 <tr>
                     <th> Id author </th>
@@ -36,6 +62,7 @@
                 </tr>
                 {% endfor %}
             </table>
+        </div>
             {% endif %}
 </main>
   </body>

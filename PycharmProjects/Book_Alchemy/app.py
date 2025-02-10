@@ -98,21 +98,26 @@ def delete_book(book_id):
     #flash("Book deleted successfully!", "success")
     return render_template('home.html')
 
-@app.route('/list_author')
+
+@app.route('/list_author', methods=['GET', 'POST'])
 def list_authors():
+    selected_filter = request.form.get("filter", "all_authors")
+    authors = db.session.query(Author).all()
     authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
-    return render_template('list_author.html', authors_without_books=authors_without_books)
+    return render_template('list_author.html', authors_without_books=authors_without_books,
+                           authors=authors, selected_filter=selected_filter)
+
 
 @app.route('/author/<int:author_id>/delete', methods=['POST'])
 def delete_author(author_id):
-
+    authors = db.session.query(Author).all()
     authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
     author = Author.query.get_or_404(author_id)
     for author_book in authors_without_books:
         if author_id == author_book.id:
             db.session.delete(author)
             db.session.commit()
-            return render_template('home.html')
+            return render_template('list_author.html', authors=authors)
 
 
 

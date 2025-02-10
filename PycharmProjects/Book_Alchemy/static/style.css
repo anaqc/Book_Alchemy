@@ -1,5 +1,6 @@
 body {
     font-family: Arial;
+    background-color: #f4f4f4;
 }
 * {
     margin: 0;
@@ -24,4 +25,47 @@ nav a {
 nav a:hover {
     background-color: pink;
     color: #333;
+}
+
+.search {
+    padding: 15px 15px;
+    display: flex;
+}
+
+label, input {
+    padding-inline: 15px;
+}
+
+.table_container{
+    display: flex;
+    justify-content: center;
+}
+
+table {
+    margin: 15px 0px;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+}
+
+td {
+    padding:10px;
+}
+
+.form_container{
+    display: flex;
+    justify-content: center;
+
+}
+
+.add_book, .add_author {
+    background-color: white;
+    padding: 20px;
+}
+h3 {
+    text-align: center;
 }

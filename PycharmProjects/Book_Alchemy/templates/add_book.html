@@ -13,8 +13,11 @@
             <a href="/add_author">Add author</a>
             <a href="{{ url_for('list_authors') }}"> List authors </a>
         </nav><br><br>
-  <form action="/add_book" method="POST">
+        <div class="form_container">
+
+  <form class="add_book" action="/add_book" method="POST">
   <!-- Add the form here -->
+      <h3>Add Books</h3><br>
     <label for="isbn">ISBN: </label>
     <input type="text" id="isbn" name="isbn" required><br><br>
     <label for="title">Title: </label>
@@ -25,5 +28,7 @@
     <input type="number" name="author_id" id="author_id" required><br><br>
     <input type="submit" value="Add Book">
   </form>
+        </div>
+
   </body>
 </html>

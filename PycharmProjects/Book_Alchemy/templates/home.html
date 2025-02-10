@@ -12,8 +12,8 @@
             <a href="/add_book"> Add book </a>
             <a href="/add_author"> Add author </a>
             <a href="{{ url_for('list_authors') }}"> List authors </a>
-        </nav><br><br>
-        <form action="/" method="POST">
+        </nav>
+        <form class="search" action="/" method="POST">
             <label for="first_filter">Filter books by:</label>
             <select name="first_filter" id="first_filter" onchange="this.form.submit()">
                 <option value="all" {% if selected_first_filter == "all" %}selected{% endif %}>All</option>
@@ -36,10 +36,13 @@
             <button type="submit">Submit</button>
             {% endif %}
         </form>
-        <br><br>
         <main>
             {% if books_authors %}
+            <h3>List Books</h3>
+            <div class="table_container">
+
                 <table>
+
                     <tr>
                         <th> Id Book </th>
                         <th> Book Title </th>
@@ -63,6 +66,8 @@
                          </tr>
                     {% endfor %}
                 </table>
+            </div>
+
 
             {% else %}
             <div> <h3>There were no books that match the search criteria!!!</h3></div>
