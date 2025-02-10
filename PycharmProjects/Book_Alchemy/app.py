@@ -75,6 +75,7 @@ def add_author():
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
     """ This function add a new book to the database library"""
+    authors = db.session.query(Author).all()
     if request.method == 'POST':
         new_book = Book(
             isbn = request.form.get('isbn'),
@@ -85,9 +86,9 @@ def add_book():
         db.session.add(new_book)
         db.session.commit()
         message = f"Book {request.form.get('title')} added successfully!"
-        return render_template('add_book.html', message=message)
+        return render_template('add_book.html', message=message, authors=authors)
     else:
-        return render_template('add_book.html')
+        return render_template('add_book.html', authors=authors)
 
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])

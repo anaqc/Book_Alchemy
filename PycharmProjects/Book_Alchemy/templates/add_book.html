@@ -25,7 +25,11 @@
     <label for="publication_year">Publication year: </label>
     <input type="text" name="publication_year" id="publication_year" placeholder="YYYY" pattern="\d{4}" maxlength="4" required><br><br>
     <label for="author_id">Id Author: </label>
-    <input type="number" name="author_id" id="author_id" required><br><br>
+    <select name="author_id" id="author_id">
+        {% for author in authors %}
+        <option value="{{ author.id }}">{{author.name}}</option>
+        {% endfor %}
+    </select><br><br>
     <input type="submit" value="Add Book">
       {% if message %}
   <div><h3>{{ message }}</h3></div>
