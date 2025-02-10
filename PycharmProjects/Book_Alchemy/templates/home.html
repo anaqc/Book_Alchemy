@@ -4,12 +4,14 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="/static/style.css">
     </head>
     <body>
         <nav>
-            <a href="/">Home</a>
-            <a href="/add_book">Add book</a>
-            <a href="/add_author">Add author</a>
+            <a href="/"> Home </a>
+            <a href="/add_book"> Add book </a>
+            <a href="/add_author"> Add author </a>
+            <a href="{{ url_for('list_authors') }}"> List authors </a>
         </nav><br><br>
         <form action="/" method="POST">
             <label for="first_filter">Filter books by:</label>
@@ -64,28 +66,6 @@
 
             {% else %}
             <div> <h3>There were no books that match the search criteria!!!</h3></div>
-            {% endif %}
-            <br><br>
-            {% if authors_without_books %}
-            <h3>Authors list doesn't have any other book in your library </h3>
-            <table>
-                <tr>
-                    <th> Id author </th>
-                    <th> Name author </th>
-                    <th> Delete </th>
-                </tr>
-                {% for author in authors_without_books %}
-                <tr>
-                    <td>{{ author.id }}</td>
-                    <td>{{ author.name }}</td>
-                    <td>
-                        <form action="{{ url_for('delete_author', author_id=author.id) }}" method="POST">
-                            <input type="submit" value="Delete">
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
             {% endif %}
         </main>
     </body>

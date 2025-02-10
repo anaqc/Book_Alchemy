@@ -1,5 +1,7 @@
 from flask import Flask, render_template, session, request, jsonify, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.util import rw_hybridproperty
+
 from data_models import db, Author, Book
 import os
 
@@ -16,9 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
-#books = session.query(Book).all()
-#authors = session.query(Author).all()
-#restaurants = session.query(Restaurant).all()
+
 # Create the new tables
 #with app.app_context():
 #    db.create_all()
@@ -28,7 +28,7 @@ def home():
     selected_first_filter = request.form.get('first_filter', 'all')
     selected_second_filter = request.form.get('second_filter', '')
     search_title_book = request.form.get('search','')
-    authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
+
     # JOIN between Book and Author
     books_authors = db.session.query(Book, Author).join(Author).filter(Book.title.like(f"%{search_title_book}%")).all()
     if request.method == 'POST':
@@ -46,25 +46,28 @@ def home():
                                 .filter(Author.name == selected_second_filter).all()
         return render_template('home.html',
                                    selected_first_filter=selected_first_filter, books_authors=books_authors,
-                                   selected_second_filter=selected_second_filter, books_query=books_query,
-                               authors_without_books=authors_without_books), 201
+                                   selected_second_filter=selected_second_filter, books_query=books_query), 201
     return render_template('home.html', books_authors=books_authors,
-                           selected_first_filter=selected_first_filter, selected_second_filter=selected_second_filter,
-                           authors_without_books=authors_without_books), 201
+                           selected_first_filter=selected_first_filter, selected_second_filter=selected_second_filter), 201
 
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
     if request.method == 'POST':
-        #Get anew author from the client
-        new_author = Author(
-            name = request.form.get('name'),
-            birth_date = request.form.get('birthdate'),
-            date_of_death = request.form.get('date_of_death')
-        )
-        db.session.add(new_author)
-        db.session.commit()
-        return jsonify({"Message": "Author added successfully!"}), 201
+        try:
+            #Get anew author from the client
+            new_author = Author(
+                name = request.form.get('name'),
+                birth_date = request.form.get('birthdate'),
+                date_of_death = request.form.get('date_of_death')
+            )
+            db.session.add(new_author)
+            db.session.commit()
+            message =  f"Author {request.form.get('name')} added successfully!"
+            return render_template('add_author.html', message=message), 201
+        except ValueError as e:
+            message = f"Error: {e}"
+            return render_template('add_author.html', message=message), 400
     else:
         return render_template('add_author.html')
 
@@ -95,16 +98,22 @@ def delete_book(book_id):
     #flash("Book deleted successfully!", "success")
     return render_template('home.html')
 
+@app.route('/list_author')
+def list_authors():
+    authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
+    return render_template('list_author.html', authors_without_books=authors_without_books)
 
 @app.route('/author/<int:author_id>/delete', methods=['POST'])
 def delete_author(author_id):
+
     authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
     author = Author.query.get_or_404(author_id)
-    for author in authors_without_books:
-        if author_id == author.id:
+    for author_book in authors_without_books:
+        if author_id == author_book.id:
             db.session.delete(author)
             db.session.commit()
             return render_template('home.html')
+
 
 
 if __name__ == '__main__':

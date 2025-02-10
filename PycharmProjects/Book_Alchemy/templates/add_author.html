@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/static/style.css">
   </head>
   <body>
         <nav>
             <a href="/">Home</a>
             <a href="/add_book">Add book</a>
             <a href="/add_author">Add author</a>
+            <a href="{{ url_for('list_authors') }}"> List authors </a>
         </nav><br><br>
   <form action="/add_author" method="POST">
   <label for="name">Author Name:</label>
@@ -19,6 +21,9 @@
   <label for="date_of_death">Date of Death:</label>
   <input type="date" id="date_of_death" name="date_of_death"><br><br>
   <input type="submit" value="Add Author">
+  {% if message %}
+  <div><h3>{{ message }}</h3></div>
+  {% endif %}
   </form>
   </body>
 </html>
