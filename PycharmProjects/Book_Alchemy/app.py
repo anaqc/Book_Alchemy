@@ -1,14 +1,12 @@
 from flask import Flask, render_template, session, request, jsonify, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.util import rw_hybridproperty
-
 from data_models import db, Author, Book
 import os
 
 
 app = Flask(__name__)
 # Ensure the database directory exists
-db_path = os.path.abspath("datas/library.sqlite")
+db_path = os.path.abspath("data/library.sqlite")
 db_dir = os.path.dirname(db_path)
 
 if not os.path.exists(db_dir):
@@ -25,6 +23,7 @@ db.init_app(app)
 
 @app.route('/' ,methods=('GET','POST'))
 def home():
+    """ This function display the homepage and shows two filters to choice """
     selected_first_filter = request.form.get('first_filter', 'all')
     selected_second_filter = request.form.get('second_filter', '')
     search_title_book = request.form.get('search','')
@@ -53,6 +52,7 @@ def home():
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
+    """ This function route to add a new author to the database """
     if request.method == 'POST':
         try:
             #Get anew author from the client
@@ -74,6 +74,7 @@ def add_author():
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
+    """ This function add a new book to the database library"""
     if request.method == 'POST':
         new_book = Book(
             isbn = request.form.get('isbn'),
@@ -83,14 +84,15 @@ def add_book():
         )
         db.session.add(new_book)
         db.session.commit()
-        #flash("Book added successfully", "success")
-        return render_template('add_book.html')
+        message = f"Book {request.form.get('title')} added successfully!"
+        return render_template('add_book.html', message=message)
     else:
         return render_template('add_book.html')
 
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])
 def delete_book(book_id):
+    """ This function delete a book from the database by its ID"""
     # Get book or return 4004 if book_if not found
     book = Book.query.get_or_404(book_id)
     db.session.delete(book)
@@ -101,6 +103,7 @@ def delete_book(book_id):
 
 @app.route('/list_author', methods=['GET', 'POST'])
 def list_authors():
+    """ This function retrieve a list of all author or a list of authors to delete"""
     selected_filter = request.form.get("filter", "all_authors")
     authors = db.session.query(Author).all()
     authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
@@ -110,6 +113,7 @@ def list_authors():
 
 @app.route('/author/<int:author_id>/delete', methods=['POST'])
 def delete_author(author_id):
+    """ This function delete an author from the database by their ID"""
     authors = db.session.query(Author).all()
     authors_without_books = db.session.query(Author).outerjoin(Book).filter(Book.id.is_(None)).all()
     author = Author.query.get_or_404(author_id)
@@ -118,7 +122,6 @@ def delete_author(author_id):
             db.session.delete(author)
             db.session.commit()
             return render_template('list_author.html', authors=authors)
-
 
 
 if __name__ == '__main__':

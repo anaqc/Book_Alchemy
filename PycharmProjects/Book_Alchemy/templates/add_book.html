@@ -27,8 +27,10 @@
     <label for="author_id">Id Author: </label>
     <input type="number" name="author_id" id="author_id" required><br><br>
     <input type="submit" value="Add Book">
+      {% if message %}
+  <div><h3>{{ message }}</h3></div>
+  {% endif %}
   </form>
         </div>
-
   </body>
 </html>
