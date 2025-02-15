@@ -1,5 +1,4 @@
-from flask import Flask, render_template, session, request, jsonify, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, request
 from data_models import db, Author, Book
 import os
 
@@ -98,7 +97,6 @@ def delete_book(book_id):
     book = Book.query.get_or_404(book_id)
     db.session.delete(book)
     db.session.commit()
-    #flash("Book deleted successfully!", "success")
     return render_template('home.html')
 
 
